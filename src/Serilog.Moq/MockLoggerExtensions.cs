@@ -7,8 +7,31 @@ using System.Text;
 
 namespace Serilog.Moq
 {
-    public static class LoggerExtensions
+    public static class MockLoggerExtensions
     {
+        #region NewInterface
+
+        public static void VerifyLogEvent(this Mock<ILogger> loggerMock,
+            Func<LogEvent, bool> logEventMatcher,
+            Times? times = null,
+            string failMessage = null)
+        {
+            var timesValue = Times.Once();
+            if (times.HasValue)
+            {
+                timesValue = times.Value;
+            }
+
+            loggerMock.Verify(
+                logger => logger.Write(It.Is<LogEvent>(logEvent => logEventMatcher(logEvent))),
+                timesValue,
+                failMessage);
+        }
+
+        #endregion NewInterface
+
+        #region OldInterface
+
         //private static bool VerifyPropertyKeyValuePair(LogEvent logEvent, 
         //    string propertyKey,
         //    string propertyValue,
@@ -29,23 +52,6 @@ namespace Serilog.Moq
 
         //    return string.Equals(unescapedValue, propertyValue, comparisonType);
         //}
-
-        public static void VerifyWrite(this Mock<ILogger> loggerMock,
-            Func<LogEvent, bool> logEventValidator,
-            Times? times = null,
-            string failMessage = null)
-        {
-            var timesValue = Times.Once();
-            if (times.HasValue)
-            {
-                timesValue = times.Value;
-            }
-
-            loggerMock.Verify(
-                logger => logger.Write(It.Is<LogEvent>(logEvent => logEventValidator(logEvent))),
-                timesValue,
-                failMessage);
-        }
 
         public static void VerifyForContext(this Mock<ILogger> loggerMock,
             string propertyKey,
@@ -78,5 +84,7 @@ namespace Serilog.Moq
         //        timesValue,
         //        failMessage);
         //}
+
+        #endregion OldInterface
     }
 }

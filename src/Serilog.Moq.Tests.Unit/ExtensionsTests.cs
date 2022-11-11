@@ -26,7 +26,7 @@ namespace Serilog.Moq.Tests.Unit
         {
             _logger.Information("");
 
-            _mockLogger.VerifyWrite(logEvent => true);
+            _mockLogger.VerifyLogEvent(logEvent => true);
         }
 
         [Fact]
@@ -34,12 +34,11 @@ namespace Serilog.Moq.Tests.Unit
         {
             _logger.Information("Test");
 
-            _mockLogger.VerifyWrite(logEvent =>
+            _mockLogger.VerifyLogEvent(logEvent =>
             {
-                return logEvent.VerifyLevel(LogEventLevel.Information)
+                return logEvent.VerifyLevelIs(LogEventLevel.Information)
                     && logEvent.VerifyLogContains("Test");
             });
-                
         }
 
         [Fact]
@@ -47,12 +46,11 @@ namespace Serilog.Moq.Tests.Unit
         {
             _logger.Information("This is a full message test");
 
-            _mockLogger.VerifyWrite(logEvent =>
+            _mockLogger.VerifyLogEvent(logEvent =>
             {
-                return logEvent.VerifyLevel(LogEventLevel.Information)
+                return logEvent.VerifyLevelIs(LogEventLevel.Information)
                     && logEvent.VerifyLogIsEquals("This is a full message test");
             });
-                
         }
 
         [Fact]
@@ -60,9 +58,9 @@ namespace Serilog.Moq.Tests.Unit
         {
             _logger.Information("{Property1}", "Test");
 
-            _mockLogger.VerifyWrite(logEvent =>
+            _mockLogger.VerifyLogEvent(logEvent =>
             {
-                return logEvent.VerifyLevel(LogEventLevel.Information)
+                return logEvent.VerifyLevelIs(LogEventLevel.Information)
                     && logEvent.VerifyLogContains("Test");
             });
         }
@@ -72,9 +70,9 @@ namespace Serilog.Moq.Tests.Unit
         {
             _logger.Information("{Prefix} This is a {Type} {Property1}", "Hi!", "Unit", "Test");
 
-            _mockLogger.VerifyWrite(logEvent =>
+            _mockLogger.VerifyLogEvent(logEvent =>
             {
-                return logEvent.VerifyLevel(LogEventLevel.Information)
+                return logEvent.VerifyLevelIs(LogEventLevel.Information)
                     && logEvent.VerifyLogContains("Test");
             });
         }
@@ -84,9 +82,9 @@ namespace Serilog.Moq.Tests.Unit
         {
             _logger.Information("{Prefix} This is a {Type} {Property1}", "Hi!", "Unit", "Test");
 
-            _mockLogger.VerifyWrite(logEvent =>
+            _mockLogger.VerifyLogEvent(logEvent =>
             {
-                return logEvent.VerifyLevel(LogEventLevel.Information)
+                return logEvent.VerifyLevelIs(LogEventLevel.Information)
                     && logEvent.VerifyLogIsEquals("Hi! This is a Unit Test");
             });
         }
@@ -100,9 +98,9 @@ namespace Serilog.Moq.Tests.Unit
         {
             _logger.Information("{Prefix} This is a {Type} {Property1}", "Hi!", "Unit", "Test");
 
-            _mockLogger.VerifyWrite(logEvent =>
+            _mockLogger.VerifyLogEvent(logEvent =>
             {
-                return logEvent.VerifyLevel(LogEventLevel.Information)
+                return logEvent.VerifyLevelIs(LogEventLevel.Information)
                     && logEvent.VerifyPropertiesKeysExist(new string[] { "Prefix", "Type", "Property1" });
             });
         }
@@ -112,9 +110,9 @@ namespace Serilog.Moq.Tests.Unit
         {
             _logger.Information("{Prefix} This is {Count} {Type} {Property1}", "Hi!", 1, "Unit", "Test");
 
-            _mockLogger.VerifyWrite(logEvent =>
+            _mockLogger.VerifyLogEvent(logEvent =>
             {
-                return logEvent.VerifyLevel(LogEventLevel.Information)
+                return logEvent.VerifyLevelIs(LogEventLevel.Information)
                     && logEvent.VerifyPropertiesKeyValuePairsExist(
                         new Dictionary<string, object> {
                             { "Prefix", "Hi!" },
@@ -136,9 +134,9 @@ namespace Serilog.Moq.Tests.Unit
                 .ForContext("Property3", 1)
                 .Information("{Property4}", "Test");
 
-            _mockLogger.VerifyWrite(logEvent =>
+            _mockLogger.VerifyLogEvent(logEvent =>
             {
-                return logEvent.VerifyLevel(LogEventLevel.Information)
+                return logEvent.VerifyLevelIs(LogEventLevel.Information)
                     && logEvent.VerifyPropertiesKeyValuePairsExist(
                         new Dictionary<string, object> {
                             { "Property1", "Moq" },
@@ -181,17 +179,15 @@ namespace Serilog.Moq.Tests.Unit
         {
             _logger.Information("");
 
-            // TODO: It must not be possible to validate all Properties, because they might come from Enrichers, both define in code or appsettings, from WithProperty, from PushProperty, that area outside Logger scope
-
-            _mockLogger.VerifyLogEvent((logEvent =>
-                logEvent
-                    .VerifyLevelIs(LogEventLevel.Information) // no need to It.IsAny? If you want to verify ANY just dont use this verification call
-                    .VerifyRenderedMessage(It.Is(s => s.Contains("Test")))  // Make Is<string> by default
-                    .VerifyProperty(
-                        It.Is(s => s.Equals("PropertyKeyExample")), // Make Is<string> by default
-                        It.Is<string>(s => s.Contains("PropertyKeyValue")))), // It.IsAny desirable to ignore verifying Value or Key. It.Is<Type> and It.IsNotNull useful to check value is of a specific type or not null as it is object?
-            Times.Once(),
-            failMessage: "Error");
+            _mockLogger.VerifyLogEvent(
+                logEvent =>
+                    logEvent.VerifyLevelIs(LogEventLevel.Information)
+                    && logEvent.VerifyRenderedMessageMatches(s => s.Contains("Test"))
+                    && logEvent.VerifyPropertyExists<string>((key, value) =>
+                        key.Equals("PropertyKeyExample")
+                        && value.Contains("PropertyKeyValue")),
+                Times.Once(),
+                failMessage: "Error");
         }
 
         #endregion SintaxExperimentation

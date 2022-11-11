@@ -2,18 +2,61 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace Serilog.Moq
 {
     public static class LogEventExtensions
     {
-        public static bool VerifyLevel(
-            this LogEvent logEvent,
-            LogEventLevel logEventLevel)
+        #region NewInterface
+
+        public static bool VerifyLevelIs(this LogEvent logEvent, LogEventLevel logEventLevel)
         {
             return logEvent.Level == logEventLevel;
         }
+
+        public static bool VerifyRenderedMessageMatches(this LogEvent logEvent, Func<string, bool> messageMatcher)
+        {
+            if (messageMatcher == null)
+            {
+                return true;
+            }
+
+            string renderedMessage = logEvent.RenderMessage();
+            // TODO: Can this break some valid string containing \"?
+            var unescapedRenderedMessage = renderedMessage.ToString().Replace("\"", String.Empty);
+            return messageMatcher(unescapedRenderedMessage);
+        }
+
+        public static bool VerifyPropertyExists<T>(this LogEvent logEvent, Func<string, T, bool> propertyMatcher)
+        {
+            if (propertyMatcher == null)
+            {
+                return true;
+            }
+
+            //if (!logEvent.Properties.A .ContainsKey(propertyKeyValuePair.Key))
+            //{
+            //    return false;
+            //}
+
+            //var value = logEvent.Properties[propertyKeyValuePair.Key];
+            //var scalarValue = (ScalarValue)value;
+
+            //// TODO: This fails for integer, how to compare?
+            //if (scalarValue.Value != propertyKeyValuePair.Value)
+            //{
+            //    return false;
+            //}
+
+            // TODO
+            return true;
+        }
+
+        #endregion NewInterface
+
+        #region OldInterface
 
         public static bool VerifyLogIsEquals(
             this LogEvent logEvent,
@@ -97,29 +140,31 @@ namespace Serilog.Moq
             return true;
         }
 
-            //public static bool VerifyMessageContains(
-            //    this LogEvent logEvent,
-            //    string message,
-            //    StringComparison comparisonType = StringComparison.InvariantCultureIgnoreCase)
-            //{
-            //    if (String.IsNullOrEmpty(message))
-            //    {
-            //        return true;
-            //    }
+        //public static bool VerifyMessageContains(
+        //    this LogEvent logEvent,
+        //    string message,
+        //    StringComparison comparisonType = StringComparison.InvariantCultureIgnoreCase)
+        //{
+        //    if (String.IsNullOrEmpty(message))
+        //    {
+        //        return true;
+        //    }
 
-            //    var isMessageInTemplate = logEvent.MessageTemplate.ToString().Contains(message, StringComparison.InvariantCultureIgnoreCase);
-            //    if (isMessageInTemplate)
-            //    {
-            //        return true;
-            //    }
+        //    var isMessageInTemplate = logEvent.MessageTemplate.ToString().Contains(message, StringComparison.InvariantCultureIgnoreCase);
+        //    if (isMessageInTemplate)
+        //    {
+        //        return true;
+        //    }
 
-            //    var isMessageInPropertiesValues = VerifyPropertyValue(logEvent, message);
-            //    if (isMessageInPropertiesValues)
-            //    {
-            //        return true;
-            //    }
+        //    var isMessageInPropertiesValues = VerifyPropertyValue(logEvent, message);
+        //    if (isMessageInPropertiesValues)
+        //    {
+        //        return true;
+        //    }
 
-            //    return false;
-            //}
-        }
+        //    return false;
+        //}
+
+        #endregion OldInterface
+    }
 }
