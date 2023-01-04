@@ -27,27 +27,30 @@ namespace Serilog.Moq
             return messageMatcher(unescapedRenderedMessage);
         }
 
-        public static bool VerifyPropertyExists(this LogEvent logEvent, Func<string, object, bool> propertyMatcher)
+        internal static bool VerifyPropertyExists<T>(this LogEvent logEvent,
+            Func<string, bool> propertyKeyMatcher,
+            Func<T, bool>? propertyValueMatcher = null)
         {
-            if (propertyMatcher == null)
-            {
-                return true;
-            }
-
             return logEvent.Properties.Any(property =>
             {
                 var value = property.Value;
                 var scalarValue = (ScalarValue)value;
 
-                // TODO: This fails for integer, how to compare?
-                //if (scalarValue.Value != propertyKeyValuePair.Value)
-                //{
-                //    return false;
-                //}
+                var castResult = scalarValue.Value is T;
+                if (!castResult)
+                {
+                    return false;
+                }
 
-                //var value = p.ToString().Replace("\"", String.Empty);
-
-                return propertyMatcher(property.Key, scalarValue.Value);
+                if (propertyValueMatcher == null)
+                {
+                    return propertyKeyMatcher(property.Key);
+                }
+                else
+                {
+                    var castedValue = (T)scalarValue.Value;
+                    return propertyKeyMatcher(property.Key) && propertyValueMatcher(castedValue);
+                }
             });
         }
     }

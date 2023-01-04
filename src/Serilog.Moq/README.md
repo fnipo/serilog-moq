@@ -15,6 +15,12 @@ Interface default methods are read by Moq since ticket [PR #972 - Interface Defa
 ## Validate Properties define by Enrichers, WithProperty, and PushProperty
 It must not be possible to validate all Properties, because they might come from Enrichers, both define in code or appsettings, from WithProperty, from PushProperty, that area outside Logger scope
 
+ForContext add an Enricher to the Logger
+PushProperty and WithProperty probably does the same by configing a new Logger with more Enrichers
+Logger.Write -> Logger.Dispatch -> which get Enrichers and act in-place on the LogLevel probably adding the properties!
+Logger.Dispatch then calls _sink.Emit with the final LogEvent!
+Emit would be the best function to mock, but not sure how to mock _sync a private field inside Logger
+
 ## Better error messages
 When logEvent verification fails, the message doesn't mention what failed at LogEvent level, but only at the Mock Write call
 

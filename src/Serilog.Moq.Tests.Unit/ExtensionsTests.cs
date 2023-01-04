@@ -1,4 +1,5 @@
 using Moq;
+using Serilog.Context;
 using Serilog.Events;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,9 @@ namespace Serilog.Moq.Tests.Unit
             _mockLogger = LoggerMockConfiguration.CreateLoggerMock();
             _logger = _mockLogger.Object;
         }
+
+        // TODO: Test each parameter on each public function, if null, what to expect, and default values
+        // TODO: Adopt property-based tests, leverage Bogus
 
         #region LogTests
 
@@ -83,15 +87,16 @@ namespace Serilog.Moq.Tests.Unit
         [Fact]
         public void GivenInformation_WhenMessageWithPropertiesApplied_PropertiesKeysShouldExist()
         {
+            using (LogContext.PushProperty("A", 1))
+            {
+
+            }
             _logger.Information("{Prefix} This is a {Type} {Property1}", "Hi!", "Unit", "Test");
 
-            _mockLogger.VerifyLogEvent(logEvent =>
-            {
-                return logEvent.VerifyLevelIs(LogEventLevel.Information)
-                    && logEvent.VerifyPropertyExists((key, _value) => key.Equals("Prefix"))
-                    && logEvent.VerifyPropertyExists((key, _value) => key.Equals("Type"))
-                    && logEvent.VerifyPropertyExists((key, _value) => key.Equals("Property1"));
-            });
+            _mockLogger.VerifyLogEvent(logEvent => logEvent.VerifyLevelIs(LogEventLevel.Information))
+                .VerifyPropertyExists(key => key.Equals("Prefix"))
+                .VerifyPropertyExists(key => key.Equals("Type"))
+                .VerifyPropertyExists(key => key.Equals("Property1"));
         }
 
         [Fact]
@@ -99,18 +104,13 @@ namespace Serilog.Moq.Tests.Unit
         {
             _logger.Information("{Prefix} This is {Count} {Type} {Property1}", "Hi!", 1, "Unit", "Test");
 
-            _mockLogger.VerifyLogEvent(logEvent =>
-            {
-                return logEvent.VerifyLevelIs(LogEventLevel.Information)
-                    && logEvent.VerifyPropertyExists((key, value) => key.Equals("Prefix") && value == "Hi!")
-                    // TODO: Need better interface than object
-                    && logEvent.VerifyPropertyExists((key, value) => key.Equals("Count") && value.ToString() == 1.ToString())
-                    && logEvent.VerifyPropertyExists((key, value) => key.Equals("Type") && value == "Unit")
-                    && logEvent.VerifyPropertyExists((key, value) => key.Equals("Property1") && value == "Test");
-            });
+            _mockLogger.VerifyLogEvent(logEvent => logEvent.VerifyLevelIs(LogEventLevel.Information))
+                .VerifyPropertyExists<string>(key => key.Equals("Prefix"), value => value.Equals("Hi!"))
+                .VerifyPropertyExists<int>(key => key.Equals("Count"), value => value == 1)
+                .VerifyPropertyExists<string>(key => key.Equals("Type"), value => value == "Unit")
+                .VerifyPropertyExists<string>(key => key.Equals("Property1"), value => value == "Test");
         }
 
-        // TODO: Context doesn't go to LogEvent level, how to verify it?
         [Fact]
         public void GivenInformation_WhenContextsApplied_PropertiesKeyValuePairsShouldExist()
         {
@@ -119,16 +119,16 @@ namespace Serilog.Moq.Tests.Unit
                 .ForContext("Property1", "Moq")
                 .ForContext("Property2", "Unit")
                 .ForContext("Property3", 1)
-                .Information("{Property4}", "Test");
+                .ForContext("Property4", 1.8)
+                .Information("{Property5}", "Test");
 
-            _mockLogger.VerifyLogEvent(logEvent =>
-            {
-                return logEvent.VerifyLevelIs(LogEventLevel.Information)
-                    && logEvent.VerifyPropertyExists((key, value) => key.Equals("Property1") && value == "Moq")
-                    && logEvent.VerifyPropertyExists((key, value) => key.Equals("Property2") && value == "Unit")
-                    && logEvent.VerifyPropertyExists((key, value) => key.Equals("Property3") && value.ToString() == 1.ToString())
-                    && logEvent.VerifyPropertyExists((key, value) => key.Equals("Property4") && value == "Test");
-            });
+            _mockLogger
+                .VerifyLogEvent(logEvent => logEvent.VerifyLevelIs(LogEventLevel.Information))
+                .VerifyPropertyExists<string>(key => key.Equals("Property1"), value => value == "Moq")
+                .VerifyPropertyExists<string>(key => key.Equals("Property2"), value => value == "Unit")
+                .VerifyPropertyExists<int>(key => key.Equals("Property3"), value => value == 1)
+                .VerifyPropertyExists<double>(key => key.Equals("Property4"), value => value == 1.8)
+                .VerifyPropertyExists<string>(key => key.Equals("Property5"), value => value == "Test");
         }
 
         #endregion PropertyTests
@@ -156,24 +156,5 @@ namespace Serilog.Moq.Tests.Unit
         // ? A field name and its value, either in Context or Message Properties, must be valid according Expression
 
         #endregion FieldExistUseCases
-
-        #region SintaxExperimentation
-
-        public void Experimentation1()
-        {
-            _logger.Information("");
-
-            _mockLogger.VerifyLogEvent(
-                logEvent =>
-                    logEvent.VerifyLevelIs(LogEventLevel.Information)
-                    && logEvent.VerifyRenderedMessageMatches(s => s.Contains("Test"))
-                    && logEvent.VerifyPropertyExists((key, value) =>
-                        key.Equals("PropertyKeyExample")
-                        && value == "PropertyKeyValue"),
-                Times.Once(),
-                failMessage: "Error");
-        }
-
-        #endregion SintaxExperimentation
     }
 }
