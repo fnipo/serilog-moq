@@ -1,9 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+	<Nullable>enable</Nullable>
+	<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <IsPackable>false</IsPackable>
+
+	<!-- Directive needed to allow to mock Serilog.ILogger.cs -->
+	<DefineConstants>FEATURE_DEFAULT_INTERFACE</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,6 +15,12 @@
     <PackageReference Include="xunit" Version="2.4.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
     <PackageReference Include="coverlet.collector" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--<ProjectReference Include="..\..\..\serilog\src\Serilog\Serilog.csproj" />-->
+    <ProjectReference Include="..\..\..\serilog\src\Serilog\Serilog.csproj" />
+    <ProjectReference Include="..\Serilog.Moq\Serilog.Moq.csproj" />
   </ItemGroup>
 
 </Project>

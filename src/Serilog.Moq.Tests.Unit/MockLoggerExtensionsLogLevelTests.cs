@@ -11,7 +11,7 @@ namespace Serilog.Moq.Tests.Unit
 
         public MockLoggerExtensionsLogLevelTests()
         {
-            _mockLogger = LoggerMockConfiguration.CreateLoggerMock();
+            _mockLogger = LoggerMockConfiguration.CreateILoggerMock();
             _logger = _mockLogger.Object;
         }
 

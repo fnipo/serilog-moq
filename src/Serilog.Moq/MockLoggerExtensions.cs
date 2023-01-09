@@ -11,9 +11,14 @@ namespace Serilog.Moq
 {
     public static class MockLoggerExtensions
     {
-        /// <summary>
-        /// Verify a log event entry
-        /// </summary>
+        // TODO: Setup ForContext, so each call creates a whole new Mock<Ilogger> that holds that property as state inside
+        //      Make each children callback parent for .Write calls carrying properties state,
+        //      so on parent verify call it has to verify itself and check if any call happened at children
+        //      Beware children callback can happen concurrently
+
+        // TODO: If having to keep track of children invocations myself as suggested below, does it still make sense to use Moq?
+        // analyse if isnt better to extend ILogger and mock it myself directly
+
 
         /// <summary>
         /// Verify if any log event entry matches

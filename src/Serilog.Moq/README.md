@@ -12,6 +12,9 @@ Interface default methods are read by Moq since ticket [PR #972 - Interface Defa
 
 # TODO
 
+### Component-level tests
+Cover library use cases
+
 ### Better error messages
 When logEvent verification fails, the message doesn't mention what failed at LogEvent level, but only at the Mock Write call
 
@@ -42,9 +45,6 @@ failMessage: "Error");
 
 ### Consider making VerifyPropertyExists part of LogLevel extensions
 One could want to check different properties for many log entries
-
-### Component-level tests
-Cover library use cases
 
 # Done
 

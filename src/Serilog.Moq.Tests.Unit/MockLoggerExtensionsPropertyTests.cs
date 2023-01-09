@@ -17,7 +17,7 @@ namespace Serilog.Moq.Tests.Unit
 
         public MockLoggerExtensionsPropertyTests()
         {
-            _mockLogger = LoggerMockConfiguration.CreateLoggerMock();
+            _mockLogger = LoggerMockConfiguration.CreateILoggerMock();
             _logger = _mockLogger.Object;
         }
 
@@ -28,8 +28,7 @@ namespace Serilog.Moq.Tests.Unit
             _logger.Information("{Prefix} This is a {Type} {Property1}", "Hi!", "Unit", "Test");
 
             // Assert
-            _mockLogger.VerifyLogEvent(logEvent => logEvent.VerifyLevelIs(LogEventLevel.Information))
-                .VerifyPropertyExists(key => key.Equals("Prefix"))
+            _mockLogger.VerifyPropertyExists(key => key.Equals("Prefix"))
                 .VerifyPropertyExists(key => key.Equals("Type"))
                 .VerifyPropertyExists(key => key.Equals("Property1"))
                 .VerifyPropertyExists(key => key.Equals("A"));
@@ -42,8 +41,7 @@ namespace Serilog.Moq.Tests.Unit
             _logger.Information("{Prefix} This is {Count} {Type} {Property1}", "Hi!", 1, "Unit", "Test");
 
             // Assert
-            _mockLogger.VerifyLogEvent(logEvent => logEvent.VerifyLevelIs(LogEventLevel.Information))
-                .VerifyPropertyExists<string>(key => key.Equals("Prefix"), value => value.Equals("Hi!"))
+            _mockLogger.VerifyPropertyExists<string>(key => key.Equals("Prefix"), value => value.Equals("Hi!"))
                 .VerifyPropertyExists<int>(key => key.Equals("Count"), value => value == 1)
                 .VerifyPropertyExists<string>(key => key.Equals("Type"), value => value == "Unit")
                 .VerifyPropertyExists<string>(key => key.Equals("Property1"), value => value == "Test");
@@ -62,9 +60,7 @@ namespace Serilog.Moq.Tests.Unit
                 .Information("{Property5}", "Test");
 
             // Assert
-            _mockLogger
-                .VerifyLogEvent(logEvent => logEvent.VerifyLevelIs(LogEventLevel.Information))
-                .VerifyPropertyExists(key => key.Equals(nameof(MockLoggerExtensionsPropertyTests)))
+            _mockLogger.VerifyPropertyExists(key => key.Equals(nameof(MockLoggerExtensionsPropertyTests)))
                 .VerifyPropertyExists<string>(key => key.Equals("Property1"), value => value == "Moq")
                 .VerifyPropertyExists<string>(key => key.Equals("Property2"), value => value == "Unit")
                 .VerifyPropertyExists<int>(key => key.Equals("Property3"), value => value == 1)

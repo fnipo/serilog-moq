@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29728.190
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serilog.Moq", "Serilog.Moq\Serilog.Moq.csproj", "{50BACB4C-2A24-4393-95AA-9631A5A0BB7D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serilog.Moq.Tests.Unit", "Serilog.Moq.Tests.Unit\Serilog.Moq.Tests.Unit.csproj", "{D6DA360C-6F35-49F6-BD37-DAD36E26E6C0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serilog.Moq.Tests.Component", "Serilog.Moq.Tests.Component\Serilog.Moq.Tests.Component.csproj", "{D5B6F361-92FB-461E-9078-055EA60B6327}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serilog.Moq.Tests.Component", "Serilog.Moq.Tests.Component\Serilog.Moq.Tests.Component.csproj", "{D5B6F361-92FB-461E-9078-055EA60B6327}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serilog", "..\..\serilog\src\Serilog\Serilog.csproj", "{873BD19F-55E2-4695-96FB-60463E56FDEF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{D5B6F361-92FB-461E-9078-055EA60B6327}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D5B6F361-92FB-461E-9078-055EA60B6327}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D5B6F361-92FB-461E-9078-055EA60B6327}.Release|Any CPU.Build.0 = Release|Any CPU
+		{873BD19F-55E2-4695-96FB-60463E56FDEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{873BD19F-55E2-4695-96FB-60463E56FDEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{873BD19F-55E2-4695-96FB-60463E56FDEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{873BD19F-55E2-4695-96FB-60463E56FDEF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

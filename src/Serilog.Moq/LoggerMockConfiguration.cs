@@ -1,4 +1,5 @@
 ﻿using Moq;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,7 +8,7 @@ namespace Serilog.Moq
 {
     public static class LoggerMockConfiguration
     {
-        public static Mock<ILogger> CreateLoggerMock()
+        public static Mock<ILogger> CreateILoggerMock()
         {
             // TODO: Not a good strategy to encapsulate and limit construction of Mock
             // Maybe don't need Loose if I Setup what is needed?
