@@ -60,8 +60,6 @@ namespace Serilog.Moq.Tests.Component
         [Fact]
         public void Test1_ShouldProduceLogs()
         {
-            // TODO: Need a mock per test case or it can affect each other? Or constructor is reacalled each time?
-
             // Arrange
             var loggerMock = LoggerMockConfiguration.CreateILoggerMock();
             var test1 = new Test1(loggerMock.Object);
@@ -86,8 +84,16 @@ namespace Serilog.Moq.Tests.Component
 
 			// NB: Needs to verify the property was called with the log event, not for the whole logger object
 			// Will probably need more code to keep state per log entry somehow
-			// Maybe on each ForContext call and DestructContext(?) keep a list of current active contexts, and on each log call store the list of context at the time
+			// Maybe on each ForContext call and DestructContext(?) keep a list of current active contexts,
+			// and on each log call store the list of context at the time
 			// then verify happens at log entry level
 		}
+
+		private void PlaygroundSinkLoggerToListToVerify()
+		{
+            new LoggerConfiguration()
+				.WriteTo.
+                .CreateLogger()
+        }
     }
 }
